@@ -25,6 +25,7 @@ import StaticPostGuide from "../pages/studio/StaticPostGuide";
 import CarouselPostGuide from "../pages/studio/CarouselPostGuide";
 import ReelVideoGuide from "../pages/studio/ReelVideoGuide";
 import ToolsHub from "../pages/tools/ToolsHub";
+import NotFound from "../pages/NotFound";
 
 /* WRAPPER FOR PROTECTED + LAYOUT */
 
@@ -42,12 +43,10 @@ const AppRoutes = () => {
   return (
     <Routes>
       {/* PUBLIC ROUTES */}
-
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
       {/* PROTECTED ROUTES */}
-
       <Route element={<ProtectedLayout />}>
         <Route path="/" element={<Home />} />
 
@@ -77,11 +76,10 @@ const AppRoutes = () => {
 
         {/* TOOLS HUB */}
         <Route path="/tools" element={<ToolsHub />} />
+
+        {/* 404 CATCH-ALL */}
+        <Route path="*" element={<NotFound />} />
       </Route>
-
-      {/* FALLBACK */}
-
-      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
 };
