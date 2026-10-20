@@ -15,6 +15,7 @@ import backlinkRoutes from "./routes/backlinkRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import healthRoutes from "./routes/healthRoutes.js";
+import activityRoutes from "./routes/activityRoutes.js";
 
 import { errorHandler, notFoundHandler } from "./middleware/errorMiddleware.js";
 import { securityHeaders } from "./middleware/securityMiddleware.js";
@@ -52,6 +53,7 @@ const startServer = async () => {
     app.use("/api/backlinks", backlinkRoutes);
     app.use("/api/analytics", analyticsRoutes);
     app.use("/api/dashboard", dashboardRoutes);
+    app.use("/api/activity", activityRoutes);
 
     // 404 & Error Handling
     app.use(notFoundHandler);
