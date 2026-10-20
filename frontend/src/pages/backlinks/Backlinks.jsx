@@ -23,25 +23,29 @@ const Backlinks = () => {
   const [statusFilter, setStatusFilter] = useState("All");
   const [platformFilter, setPlatformFilter] = useState("All");
 
-  const fetchBacklinks = async () => {
-    try {
-      const data = await getBacklinks(brandId);
-      setBacklinks(data);
-    } catch {
-      toast.error("Failed to load backlinks");
-    }
-
-    setLoading(false);
-  };
-
   useEffect(() => {
-    fetchBacklinks();
+    let active = true;
+
+    getBacklinks(brandId)
+      .then((data) => {
+        if (active) setBacklinks(data);
+      })
+      .catch(() => {
+        if (active) toast.error("Failed to load backlinks");
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
   }, [brandId]);
 
   const handleCreate = async (form) => {
     try {
       const newLink = await createBacklink(form);
-      setBacklinks([newLink, ...backlinks]);
+      setBacklinks((current) => [newLink, ...current]);
       setShowForm(false);
       toast.success("Backlink added");
     } catch {
@@ -52,7 +56,7 @@ const Backlinks = () => {
   const handleDelete = async (id) => {
     try {
       await deleteBacklink(id);
-      setBacklinks(backlinks.filter((b) => b._id !== id));
+      setBacklinks((current) => current.filter((b) => b._id !== id));
       toast.success("Backlink deleted");
     } catch {
       toast.error("Delete failed");

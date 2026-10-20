@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GlassCard from "../ui/GlassCard";
 import toast from "react-hot-toast";
 
 const BacklinkTable = ({ backlinks, onDelete }) => {
   const navigate = useNavigate();
+  const [now] = useState(() => Date.now());
 
   const getStatusBadge = (status) => {
     if (status === "Live") {
@@ -26,7 +28,7 @@ const BacklinkTable = ({ backlinks, onDelete }) => {
   };
 
   const getAge = (date) => {
-    const diff = Date.now() - new Date(date).getTime();
+    const diff = now - new Date(date).getTime();
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
     if (days < 1) return "Today";

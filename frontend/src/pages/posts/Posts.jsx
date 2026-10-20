@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import GlassCard from "../../components/ui/GlassCard";
 import PostCard from "../../components/posts/PostCard";
@@ -18,7 +18,7 @@ const Posts = () => {
   const [statusFilter, setStatusFilter] = useState("All");
   const [platformFilter, setPlatformFilter] = useState("All");
 
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       const data = await getPosts(brandId);
       setPosts(data);
@@ -27,10 +27,25 @@ const Posts = () => {
     }
 
     setLoading(false);
-  };
+  }, [brandId]);
 
   useEffect(() => {
-    fetchPosts();
+    let active = true;
+
+    getPosts(brandId)
+      .then((data) => {
+        if (active) setPosts(data);
+      })
+      .catch(() => {
+        if (active) toast.error("Failed to load posts");
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
   }, [brandId]);
 
   // 🔥 AUTO REFRESH EVERY 5s
@@ -40,7 +55,7 @@ const Posts = () => {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [brandId]);
+  }, [fetchPosts]);
 
   /* 🚀 GLOBAL UPDATE HANDLER (IMMUTABLE) */
   const handleUpdatePost = (updatedPost) => {

@@ -23,26 +23,30 @@ const Brands = () => {
 
   const [showForm, setShowForm] = useState(false);
 
-  const fetchBrands = async () => {
-    try {
-      const data = await getBrands();
-      setBrands(data);
-    } catch {
-      toast.error("Failed to load brands");
-    }
-
-    setLoading(false);
-  };
-
   useEffect(() => {
-    fetchBrands();
+    let active = true;
+
+    getBrands()
+      .then((data) => {
+        if (active) setBrands(data);
+      })
+      .catch(() => {
+        if (active) toast.error("Failed to load brands");
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const handleCreate = async (form) => {
     try {
       const newBrand = await createBrand(form);
 
-      setBrands([newBrand, ...brands]);
+      setBrands((current) => [newBrand, ...current]);
 
       setShowForm(false);
 
@@ -56,7 +60,7 @@ const Brands = () => {
     try {
       await deleteBrand(id);
 
-      setBrands(brands.filter((b) => b._id !== id));
+      setBrands((current) => current.filter((b) => b._id !== id));
 
       toast.success("Brand deleted");
     } catch {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import Calendar from "react-calendar";
@@ -34,28 +34,41 @@ const CalendarPage = () => {
   const [dayEntries, setDayEntries] = useState([]);
   const [viewEntry, setViewEntry] = useState(null);
 
-  const fetchEntries = async () => {
+  const fetchEntries = useCallback(async () => {
     try {
       const data = await getCalendarEntries(brandId);
       setEntries(data);
     } catch {
       toast.error("Failed to load calendar");
     }
-  };
+  }, [brandId]);
 
   useEffect(() => {
-    fetchEntries();
-  }, []);
+    let active = true;
+
+    getCalendarEntries(brandId)
+      .then((data) => {
+        if (active) setEntries(data);
+      })
+      .catch(() => {
+        if (active) toast.error("Failed to load calendar");
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [brandId]);
 
   /* FILTER BY DATE */
   const getEntriesForDate = (date) => {
+    const selectedDay = [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, "0"),
+      String(date.getDate()).padStart(2, "0"),
+    ].join("-");
+
     return entries.filter((entry) => {
-      const d = new Date(entry.date);
-      return (
-        d.getFullYear() === date.getFullYear() &&
-        d.getMonth() === date.getMonth() &&
-        d.getDate() === date.getDate()
-      );
+      return String(entry.date).slice(0, 10) === selectedDay;
     });
   };
 
@@ -71,14 +84,16 @@ const CalendarPage = () => {
     try {
       if (editingEntry) {
         const updated = await updateCalendarEntry(editingEntry._id, form);
-        setEntries(entries.map((e) => (e._id === updated._id ? updated : e)));
+        setEntries((current) =>
+          current.map((e) => (e._id === updated._id ? updated : e)),
+        );
         toast.success("Entry updated");
       } else {
         const newEntry = await createCalendarEntry({
           ...form,
           brandId,
         });
-        setEntries([newEntry, ...entries]);
+        setEntries((current) => [newEntry, ...current]);
         toast.success("Entry created");
       }
 
@@ -95,8 +110,8 @@ const CalendarPage = () => {
     try {
       await deleteCalendarEntry(id);
 
-      setEntries(entries.filter((e) => e._id !== id));
-      setDayEntries(dayEntries.filter((e) => e._id !== id));
+      setEntries((current) => current.filter((e) => e._id !== id));
+      setDayEntries((current) => current.filter((e) => e._id !== id));
 
       setViewEntry(null);
 

@@ -1,31 +1,26 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import GlassCard from "../ui/GlassCard";
 
-const CalendarModal = ({ selectedDate, onSave, onClose, existing }) => {
-  const [form, setForm] = useState({
-    title: "",
-    postType: "",
-    platform: "",
-    description: "",
-    date: "",
-  });
+const getInitialForm = (existing, selectedDate) => ({
+  title: existing?.title || "",
+  postType: existing?.postType || "",
+  platform: existing?.platform || "",
+  description: existing?.description || "",
+  date: existing?.date
+    ? existing.date.slice(0, 10)
+    : selectedDate
+      ? [
+          selectedDate.getFullYear(),
+          String(selectedDate.getMonth() + 1).padStart(2, "0"),
+          String(selectedDate.getDate()).padStart(2, "0"),
+        ].join("-")
+      : "",
+});
 
-  useEffect(() => {
-    if (existing) {
-      setForm({
-        title: existing.title || "",
-        postType: existing.postType || "",
-        platform: existing.platform || "",
-        description: existing.description || "",
-        date: existing.date ? existing.date.slice(0, 10) : "",
-      });
-    } else if (selectedDate) {
-      setForm((prev) => ({
-        ...prev,
-        date: selectedDate.toISOString().slice(0, 10),
-      }));
-    }
-  }, [existing, selectedDate]);
+const CalendarModal = ({ selectedDate, onSave, onClose, existing }) => {
+  const [form, setForm] = useState(() =>
+    getInitialForm(existing, selectedDate),
+  );
 
   const handleChange = (e) => {
     setForm({
@@ -47,7 +42,7 @@ const CalendarModal = ({ selectedDate, onSave, onClose, existing }) => {
         </h3>
 
         <p className="text-sm text-gray-500 mb-4">
-          Date: {selectedDate.toDateString()}
+          Date: {selectedDate?.toDateString() || form.date}
         </p>
 
         {/* 🚀 UPGRADED FORM */}

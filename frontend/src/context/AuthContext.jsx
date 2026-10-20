@@ -1,6 +1,10 @@
-import { createContext, useState, useEffect } from "react";
 
-export const AuthContext = createContext();
+import {
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import { AuthContext } from "./AuthContextValue";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -11,31 +15,47 @@ export const AuthProvider = ({ children }) => {
       const storedUser = localStorage.getItem("user");
 
       if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
-    } catch (err) {
-      console.error("Invalid user in localStorage");
-      localStorage.removeItem("user");
-    }
+        const parsedUser = JSON.parse(storedUser);
 
-    setLoading(false);
+        if (
+          parsedUser &&
+          typeof parsedUser === "object" &&
+          typeof parsedUser.token === "string" &&
+          parsedUser.token.length > 0
+        ) {
+          setUser(parsedUser);
+        } else {
+          localStorage.removeItem("user");
+        }
+      }
+    } catch (error) {
+      console.error("Unable to load saved authentication data.", error);
+      localStorage.removeItem("user");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const login = (data) => {
+  const login = useCallback((data) => {
+    if (!data || typeof data.token !== "string" || !data.token) {
+      throw new Error("The server did not return a valid authentication token.");
+    }
+
     localStorage.setItem("user", JSON.stringify(data));
     setUser(data);
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("user");
     setUser(null);
 
-    // 🔥 redirect after logout
-    window.location.href = "/login";
-  };
+    window.location.assign("/login");
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider
+      value={{ user, login, logout, loading }}
+    >
       {children}
     </AuthContext.Provider>
   );

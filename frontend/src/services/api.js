@@ -1,31 +1,48 @@
+
 import axios from "axios";
 
 const API = axios.create({
   baseURL: "http://localhost:5000/api",
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-// ✅ Attach token
-API.interceptors.request.use((req) => {
-  const user = JSON.parse(localStorage.getItem("user"));
+API.interceptors.request.use(
+  (config) => {
+    try {
+      const storedUser = localStorage.getItem("user");
+      const user = storedUser ? JSON.parse(storedUser) : null;
 
-  if (user?.token) {
-    req.headers.Authorization = `Bearer ${user.token}`;
-  }
+      if (user?.token) {
+        config.headers.Authorization = `Bearer ${user.token}`;
+      }
+    } catch (error) {
+      console.error("Unable to read saved authentication data.", error);
+    }
 
-  return req;
-});
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
 
-// ✅ Handle expired token / auth errors
 API.interceptors.response.use(
-  (res) => res,
+  (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      console.warn("Token expired or unauthorized. Logging out...");
+    const status = error.response?.status;
+    const url = error.config?.url || "";
 
+    const isAuthRequest =
+      /\/auth\/(login|register)\/?$/.test(url);
+
+    // A failed login should show its error on the login page.
+    // Only redirect when a protected API request returns 401.
+    if (status === 401 && !isAuthRequest) {
       localStorage.removeItem("user");
 
-      // 🔥 Force redirect to login
-      window.location.href = "/login";
+      if (window.location.pathname !== "/login") {
+        window.location.assign("/login");
+      }
     }
 
     return Promise.reject(error);

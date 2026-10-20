@@ -9,6 +9,7 @@ import PostForm from "./PostForm";
 const PostCard = ({ post, onDelete, onUpdate }) => {
   const navigate = useNavigate();
 
+  const [now] = useState(() => Date.now());
   const [showEdit, setShowEdit] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -57,7 +58,7 @@ const PostCard = ({ post, onDelete, onUpdate }) => {
   const getScheduleLabel = (date) => {
     if (!date) return "";
 
-    const diff = new Date(date) - Date.now();
+    const diff = new Date(date).getTime() - now;
     const minutes = Math.floor(diff / (1000 * 60));
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));

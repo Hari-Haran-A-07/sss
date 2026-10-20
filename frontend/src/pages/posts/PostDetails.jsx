@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import GlassCard from "../../components/ui/GlassCard";
 import toast from "react-hot-toast";
@@ -20,25 +20,40 @@ const PostDetails = () => {
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
-  const fetchPost = async () => {
+  const fetchPost = useCallback(async () => {
     try {
       const data = await getPost(postId);
       setPost(data);
     } catch {
       toast.error("Failed to load post");
     }
-  };
+  }, [postId]);
 
   useEffect(() => {
-    fetchPost();
-  }, []);
+    let active = true;
+
+    getPost(postId)
+      .then((data) => {
+        if (active) setPost(data);
+      })
+      .catch(() => {
+        if (active) toast.error("Failed to load post");
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [postId]);
 
   /* 🔥 KEYBOARD NAVIGATION */
   useEffect(() => {
     if (!post) return;
 
     const handleKey = (e) => {
-      if (e.key === "ArrowRight" && activeIndex < post.mediaUrls.length - 1) {
+      if (
+        e.key === "ArrowRight" &&
+        activeIndex < (post.mediaUrls?.length ?? 0) - 1
+      ) {
         setActiveIndex((prev) => prev + 1);
       }
 
@@ -65,7 +80,7 @@ const PostDetails = () => {
 
     if (!post) return;
 
-    if (diff > 50 && activeIndex < post.mediaUrls.length - 1) {
+    if (diff > 50 && activeIndex < (post.mediaUrls?.length ?? 0) - 1) {
       setActiveIndex((prev) => prev + 1);
     }
 
@@ -75,6 +90,8 @@ const PostDetails = () => {
   };
 
   if (!post) return null;
+
+  const mediaUrls = post.mediaUrls || [];
 
   return (
     <div>
@@ -88,17 +105,20 @@ const PostDetails = () => {
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
             >
-              {post.mediaUrls[activeIndex]?.includes("video") ? (
+              {mediaUrls[activeIndex]?.includes("video") ? (
                 <video
-                  src={post.mediaUrls[activeIndex]}
+                  src={mediaUrls[activeIndex]}
                   controls
                   className="w-full rounded-xl"
                 />
-              ) : (
+              ) : mediaUrls[activeIndex] ? (
                 <img
-                  src={post.mediaUrls[activeIndex]}
+                  src={mediaUrls[activeIndex]}
+                  alt={post.title}
                   className="w-full rounded-xl"
                 />
+              ) : (
+                <p className="text-sm text-gray-500">No media available.</p>
               )}
 
               {/* LEFT */}
@@ -112,7 +132,7 @@ const PostDetails = () => {
               )}
 
               {/* RIGHT */}
-              {activeIndex < post.mediaUrls.length - 1 && (
+              {activeIndex < mediaUrls.length - 1 && (
                 <button
                   onClick={() => setActiveIndex((prev) => prev + 1)}
                   className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white px-2 py-1 rounded"
@@ -124,7 +144,7 @@ const PostDetails = () => {
 
             {/* 🔥 THUMBNAILS */}
             <div className="flex gap-2 mt-3 overflow-x-auto">
-              {post.mediaUrls.map((url, i) => (
+              {mediaUrls.map((url, i) => (
                 <img
                   key={i}
                   src={url}
