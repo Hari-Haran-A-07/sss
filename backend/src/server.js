@@ -16,7 +16,10 @@ import analyticsRoutes from "./routes/analyticsRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import healthRoutes from "./routes/healthRoutes.js";
 
-import { errorHandler } from "./middleware/errorMiddleware.js";
+import { errorHandler, notFoundHandler } from "./middleware/errorMiddleware.js";
+import { securityHeaders } from "./middleware/securityMiddleware.js";
+import { requestLogger } from "./middleware/loggerMiddleware.js";
+import { apiLimiter } from "./middleware/rateLimitMiddleware.js";
 
 import { initBullBoard } from "./utils/bullBoard.js";
 import { recoverMissedJobs } from "./jobs/recoveryService.js";
@@ -27,14 +30,21 @@ const startServer = async () => {
 
     const app = express();
 
+    // Security & Logging Middlewares
+    app.use(securityHeaders);
+    app.use(requestLogger);
     app.use(cors());
     app.use(express.json());
 
-    // 🔥 Bull Board
+    // Rate Limiting on API endpoints
+    app.use("/api", apiLimiter.middleware());
+
+    // Bull Board Queue UI
     const serverAdapter = initBullBoard();
     app.use("/admin/queues", serverAdapter.getRouter());
 
-    // 🔥 Routes
+    // API Routes
+    app.use("/api/health", healthRoutes);
     app.use("/api/auth", authRoutes);
     app.use("/api/brands", brandRoutes);
     app.use("/api/calendar", calendarRoutes);
@@ -42,8 +52,9 @@ const startServer = async () => {
     app.use("/api/backlinks", backlinkRoutes);
     app.use("/api/analytics", analyticsRoutes);
     app.use("/api/dashboard", dashboardRoutes);
-    app.use("/api/health", healthRoutes);
 
+    // 404 & Error Handling
+    app.use(notFoundHandler);
     app.use(errorHandler);
 
     const PORT = process.env.PORT || 5000;
@@ -52,7 +63,7 @@ const startServer = async () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📊 Bull Board: http://localhost:${PORT}/admin/queues`);
 
-      // 🔥 Recovery
+      // Recovery
       await recoverMissedJobs();
     });
   } catch (error) {
