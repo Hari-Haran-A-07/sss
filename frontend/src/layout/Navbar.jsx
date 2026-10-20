@@ -26,6 +26,14 @@ const Navbar = () => {
             Brands
           </Link>
 
+          <Link to="/studio" className="text-gray-700 hover:text-blue-600">
+            Creative Studio
+          </Link>
+
+          <Link to="/tools" className="text-gray-700 hover:text-blue-600">
+            Tools Hub
+          </Link>
+
           <button
             onClick={logout}
             className="flex items-center gap-2 text-gray-700 hover:text-red-500"
