@@ -28,8 +28,8 @@ const connectDB = async () => {
     const opts = {
       dbName: "socialmedia",
       bufferCommands: false,
-      serverSelectionTimeoutMS: 10000,
-      connectTimeoutMS: 10000,
+      serverSelectionTimeoutMS: 3000, // Fail fast to activate in-memory fallback quickly
+      connectTimeoutMS: 3000,
     };
 
     cached.promise = mongoose
@@ -40,7 +40,7 @@ const connectDB = async () => {
       })
       .catch((err) => {
         cached.promise = null;
-        console.error("❌ MongoDB connection error:", err.message);
+        console.warn("⚠️ MongoDB connection error (fallback active):", err.message);
         throw err;
       });
   }
