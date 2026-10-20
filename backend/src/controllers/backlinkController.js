@@ -1,5 +1,6 @@
 import Backlink from "../models/Backlink.js";
 import asyncHandler from "express-async-handler";
+import { paginate } from "../utils/paginate.js";
 
 /* CREATE BACKLINK */
 
@@ -9,13 +10,36 @@ export const createBacklink = asyncHandler(async (req, res) => {
   res.status(201).json(backlink);
 });
 
-/* GET BACKLINKS BY BRAND */
+/* GET BACKLINKS BY BRAND WITH FILTERING & SEARCH */
 
 export const getBacklinks = asyncHandler(async (req, res) => {
-  const backlinks = await Backlink.find({
-    brandId: req.params.brandId,
-  });
+  const { brandId } = req.params;
+  const { status, platform, search, page } = req.query;
 
+  const filter = { brandId };
+
+  if (status) {
+    filter.status = status;
+  }
+
+  if (platform) {
+    filter.platform = platform;
+  }
+
+  if (search && search.trim()) {
+    filter.$or = [
+      { contentTitle: { $regex: search.trim(), $options: "i" } },
+      { backlinkUrl: { $regex: search.trim(), $options: "i" } },
+      { userName: { $regex: search.trim(), $options: "i" } },
+    ];
+  }
+
+  if (page) {
+    const paginatedResult = await paginate(Backlink, filter, req.query);
+    return res.json(paginatedResult);
+  }
+
+  const backlinks = await Backlink.find(filter).sort({ date: -1 });
   res.json(backlinks);
 });
 
