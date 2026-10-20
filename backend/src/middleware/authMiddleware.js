@@ -21,7 +21,7 @@ export const protect = async (req, res, next) => {
     }
 
     // Verify token (this can throw → handled by try-catch)
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "supersecretjwtkey");
 
     // Fetch user
     const user = await User.findById(decoded.id).select("-password");
