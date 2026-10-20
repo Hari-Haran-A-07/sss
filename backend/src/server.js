@@ -30,16 +30,22 @@ const app = express();
 // Ensure DB connected on startup
 connectDB().catch((err) => console.error("Initial DB connect error:", err.message));
 
-// Middleware to ensure DB connection per request (serverless resilience)
+// Middleware to ensure DB is connected before handling API requests
 app.use(async (req, res, next) => {
-  if (mongoose.connection.readyState < 1 && process.env.MONGO_URI) {
-    try {
-      await connectDB();
-    } catch (err) {
-      console.warn("DB connection attempt failed:", err.message);
-    }
+  if (req.path === "/" || req.path === "/health" || req.path === "/api/health") {
+    return next();
   }
-  next();
+
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    return res.status(503).json({
+      success: false,
+      message: `Database connection error: ${err.message}. If using MongoDB Atlas, ensure 0.0.0.0/0 (Allow access from anywhere) is enabled in Network Access.`,
+      error: err.message,
+    });
+  }
 });
 
 // Security & Logging Middlewares
