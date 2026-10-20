@@ -1,254 +1,143 @@
-# 🚀 Social Media Strategy System
+# 🚀 Social Media Strategy System (SocialPulse)
 
-An **AI-powered Social Media Management & Strategy Platform** designed to help brands **plan, schedule, automate, analyze, and optimize** their social media presence — all in one place.
+An **AI-powered Social Media Management & Strategy Platform** designed to help brands **plan, schedule, automate, analyze, and optimize** their social media presence — all in one unified workspace.
 
-Built with a **modern MERN Stack architecture**, this platform provides businesses and marketers with powerful tools for **content planning**, **post scheduling**, **backlink management**, **analytics insights**, and **report generation**.
+Built with a high-performance **MERN Stack + Redis & BullMQ** architecture, this platform provides businesses, agencies, and creators with end-to-end tooling for content ideation, automated multi-platform distribution, SEO backlink tracking, real-time analytics, and creative guidance.
 
 ---
 
-## ✨ Features
+## ✨ Features & Architecture
 
-### 📌 Brand Management
+### 📌 Multi-Brand Workspace
+* Create, manage, and isolate multiple brand profiles with dedicated workspaces.
+* Store brand identity, industry field, and connected social account tokens.
+* Quick launchers for content planning, scheduling, backlinks, and creative studio.
 
-* Create and manage multiple brands
-* Store brand-specific information
-* Connect social accounts and integrations
+### 🎨 Creative Studio & Guides
+* **Creative Studio Dashboard**: Hub for content format recommendations and best practices.
+* **Static Post Guide**: Image dimensions, aspect ratios, file size limits, and composition tips for Instagram, Facebook, and LinkedIn.
+* **Carousel Post Guide**: Multi-slide storytelling structures, hook frameworks, and technical slide specs.
+* **Reel & Video Guide**: Short-form video pacing, hook retention rules, audio strategy, and 9:16 aspect ratio specifications.
 
-### 🗓️ Content Planning Calendar
+### 🧰 Tools & Resources Hub
+* Curated searchable directory of design, copy, video editing, and analytics tools.
+* Live search with debounce, platform category filters, and direct links.
 
-* Plan content visually using an interactive calendar
-* Add and edit content plans
-* Organize campaigns efficiently
+### 🗓️ Visual Content Calendar
+* Drag-and-drop interactive calendar for campaign planning and content roadmaps.
+* Filter and visualize upcoming deliverables by platform and content format.
 
-### 📲 Social Media Post Scheduling
+### 📲 Smart Post Scheduling & BullMQ Engine
+* Schedule multi-media posts for future automated publishing.
+* Cloudinary media integration with automated multi-file uploads.
+* BullMQ queue-based background worker with exponential backoff retries.
+* Background crash-recovery service to automatically reschedule missed jobs after restarts.
+* Real-time Bull Board monitoring dashboard at `/admin/queues`.
 
-* Schedule posts for future publishing
-* Upload media (images/videos/carousels)
-* Supports multiple post types:
+### 🔗 Backlink & SEO Outreach Tracker
+* Track external backlink placements across Reddit, Medium, Quora, Dev.to, and niche blogs.
+* Search, filter, and paginate backlinks by status (`Live`, `Pending`, `Removed`) and platform.
 
-  * 🖼️ Static Posts
-  * 🎠 Carousel Posts
-  * 🎬 Reels
-  * 🎥 Videos
+### 📊 Analytics & Reporting
+* Visual analytics charts: Content Type Distribution, Platform Breakdown, Post Statuses, and Growth Trends.
+* Client-side CSV and JSON export utility for stakeholder reporting.
 
-### ⚙️ Automated Posting System
-
-* Background workers for scheduled posting
-* Queue-based job processing with BullMQ
-* Retry & recovery mechanism
-
-### 🔗 Backlink Management
-
-* Track backlinks across platforms like:
-
-  * Reddit
-  * Quora
-  * Medium
-  * Stack Exchange
-
-### 📊 Advanced Analytics Dashboard
-
-* View business insights with beautiful charts:
-
-  * Content Type Distribution
-  * Platform Distribution
-  * Post Status Overview
-  * Posting Frequency
-  * Backlink Growth
-
-### 📄 Export Reports
-
-* Generate professional **PDF reports** for clients
-
-### 🔐 Authentication & Security
-
-* JWT Authentication
-* Protected routes
-* Secure backend APIs
-
-### 🎨 Premium UI/UX
-
-* Modern Glassmorphism Design
-* Responsive Dashboard Layout
-* Elegant Animations & Interactive Components
+### 🛡️ Enterprise Security & Robustness
+* **Sliding Window Rate Limiter**: Protects sensitive endpoints against brute-force attacks and abuse.
+* **Security Headers**: Standardized defenses against XSS, clickjacking, and MIME sniffing.
+* **Schema Validation**: Express validation middleware verifying payloads for brands, posts, and backlinks.
+* **Structured Error Handling**: Standardized error responses with distinct handling for Mongoose validation and duplicate key constraints.
+* **Request Logger**: High-resolution execution timing logger for API performance observability.
+* **Health Check API**: `/api/health` providing uptime, memory usage, and database connection state.
 
 ---
 
 ## 🛠️ Tech Stack
 
-### Frontend
-
-* ⚛️ React.js
-* 🎨 Tailwind CSS
-* 📊 Recharts
-* 🔥 React Hot Toast
-* 🌐 React Router DOM
-* 🧩 Material UI
-
-### Backend
-
-* 🟢 Node.js
-* 🚂 Express.js
-* 🍃 MongoDB
-* 🔐 JWT Authentication
-
-### Cloud & Integrations
-
-* ☁️ Cloudinary
-* ⚡ Redis
-* 🧵 BullMQ
+| Layer | Technologies |
+|---|---|
+| **Frontend** | React 18, Vite, Tailwind CSS, Lucide Icons, React Icons, Material UI Breadcrumbs, Recharts, React Router DOM 6 |
+| **Backend** | Node.js, Express.js (ES Modules), Mongoose, Cloudinary, Multer, JSON Web Tokens (JWT), Bcrypt.js |
+| **Queues & Worker** | Redis 7, BullMQ, @bull-board/express |
+| **DevOps & Containers** | Docker, Docker Compose, Nginx, GitHub Actions CI |
 
 ---
 
-## 📂 Project Structure
+## 🚀 Getting Started
+
+### Prerequisites
+* **Node.js**: v20 or higher
+* **MongoDB**: Local instance or MongoDB Atlas URI
+* **Redis**: Local instance or Redis Cloud URL
+
+### 1. Clone & Configure Environment
 
 ```bash
-social-media-strategy-system/
-│
-├── backend/
-│   ├── src/
-│   │   ├── config/
-│   │   ├── controllers/
-│   │   ├── middleware/
-│   │   ├── models/
-│   │   ├── routes/
-│   │   ├── jobs/
-│   │   ├── workers/
-│   │   └── utils/
-│
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── services/
-│   │   ├── routes/
-│   │   └── layout/
+git clone https://github.com/Hari-Haran-A-07/sss.git
+cd sss
 ```
 
----
-
-## ⚙️ Installation & Setup
-
-### 1️⃣ Clone the Repository
-
-```bash
-git clone https://github.com/SathyaVasagan/social-media-strategy-system.git
-cd social-media-strategy-system
-```
-
-### 2️⃣ Install Dependencies
-
-#### Backend
-
-```bash
-cd backend
-npm install
-```
-
-#### Frontend
-
-```bash
-cd frontend
-npm install
-```
-
----
-
-## 🔑 Environment Variables
-
-Create `.env` files using the provided `.env.example`
-
-### Backend `.env`
-
+Create `.env` inside `backend/`:
 ```env
 PORT=5000
-MONGO_URI=your_mongodb_uri
-JWT_SECRET=your_secret_key
-
+MONGO_URI=mongodb://localhost:27017/socialmedia
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+JWT_SECRET=your_jwt_secret_key_here
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
-
-REDIS_URL=your_redis_url
 ```
 
----
+### 2. Run with Docker Compose (Recommended)
 
-## ▶️ Run the Project
+To run the complete stack (MongoDB, Redis, Backend, and Frontend):
 
-### Start Backend
+```bash
+docker-compose up --build
+```
 
+* **Frontend**: `http://localhost`
+* **Backend API**: `http://localhost:5000`
+* **Bull Board**: `http://localhost:5000/admin/queues`
+
+### 3. Local Development
+
+**Backend:**
 ```bash
 cd backend
+npm install
 npm run dev
 ```
 
-### Start Frontend
-
+**Frontend:**
 ```bash
 cd frontend
+npm install
 npm run dev
 ```
 
 ---
 
-## 📸 Screenshots
+## 📡 API Overview
 
-*Add project screenshots here*
-
-*Home*
-<img width="1240" height="815" alt="image" src="https://github.com/user-attachments/assets/10613dff-91e6-4fa3-b0cb-5c0b4ca97fbf" />
-
-*Brand*
-<img width="1240" height="588" alt="image" src="https://github.com/user-attachments/assets/88a8cece-eca5-442c-ae9e-500df884372e" />
-
-*Brand Workspace*
-<img width="1240" height="588" alt="image" src="https://github.com/user-attachments/assets/fa84bdee-39b3-431c-9f9c-f39cd3b9453c" />
-
-*Content Calendar*
-<img width="1240" height="588" alt="image" src="https://github.com/user-attachments/assets/d247dbdb-169b-4b77-ba1a-8e3dd1b7ddee" />
-
-*Posts*
-<img width="1240" height="1059" alt="image" src="https://github.com/user-attachments/assets/cc5a5080-fb7f-4210-8aac-aa4f503ae651" />
-
-*Backlinks*
-<img width="1240" height="588" alt="image" src="https://github.com/user-attachments/assets/5e6e0588-dc4c-44df-892b-47104e152e8c" />
-
-*Analytics*
-<img width="1240" height="1533" alt="image" src="https://github.com/user-attachments/assets/ab2b1bec-0312-4438-a0ab-57c10fb09737" />
-
-
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| `GET` | `/api/health` | System health, uptime & DB status | Public |
+| `POST` | `/api/auth/register` | Register new user account | Public |
+| `POST` | `/api/auth/login` | Authenticate and issue JWT token | Public |
+| `GET` | `/api/brands` | List user brands | Required |
+| `POST` | `/api/brands` | Create new brand profile | Required |
+| `GET` | `/api/posts/brand/:brandId` | List brand posts (supports filter & pagination) | Required |
+| `POST` | `/api/posts` | Schedule new post with media | Required |
+| `PATCH` | `/api/posts/:id/toggle-status` | Toggle Draft / Scheduled status | Required |
+| `POST` | `/api/posts/:id/retry` | Retry failed job execution | Required |
+| `GET` | `/api/backlinks/brand/:brandId` | List brand backlinks | Required |
+| `POST` | `/api/backlinks` | Create backlink record | Required |
+| `GET` | `/api/activity/brand/:brandId` | View workspace audit activity trail | Required |
+| `GET` | `/admin/queues` | BullMQ administrative queue board | Admin |
 
 ---
 
-## 🌟 Future Enhancements
-
-* 🤖 AI Caption Generator
-* 📩 Email Reports to Clients
-* 📱 Push Notifications
-* 📈 AI-based Recommendations
-* 👥 Multi-user Team Collaboration
-
----
-
-## 👨‍💻 Author
-
-**Sathya Vasagan E**
-
-* 🌐 GitHub: https://github.com/SathyaVasagan
-* 💼 LinkedIn: https://www.linkedin.com/in/sathya-vasagan/
-* 💻 Portfolio: https://sathya-vasagan.netlify.app/
-
----
-
-## ⭐ Support
-
-If you like this project:
-
-🌟 Star this repository
-🍴 Fork this repository
-📢 Share it with others
-
----
-
-### 💙 Thank you for visiting Social Media Strategy System repository!
+## 📄 License
+ISC © Social Media Strategy System Contributors
