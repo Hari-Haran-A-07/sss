@@ -4,6 +4,7 @@ import Post from "../models/Post.js";
 import asyncHandler from "express-async-handler";
 import getCloudinary from "../utils/cloudinary.js";
 import { postQueue } from "../jobs/postQueue.js";
+import { paginate } from "../utils/paginate.js";
 
 /* HELPER */
 
@@ -151,26 +152,26 @@ export const updatePost = asyncHandler(async (req, res) => {
   res.json(post);
 });
 
-/* 🚀 TOGGLE POST STATUS (NEW) */
+/* 🚀 TOGGLE POST STATUS */
 
 export const togglePostStatus = asyncHandler(async (req, res) => {
   const post = await Post.findById(req.params.id);
   if (!post) throw new Error("Post not found");
 
-  // ❌ HARD BLOCK
+  // HARD BLOCK
   if (post.status === "Posted") {
     res.status(400);
     throw new Error("Posted posts cannot be modified");
   }
 
-  // 🔥 Remove existing job
+  // Remove existing job
   if (post.jobId) {
     const oldJob = await postQueue.getJob(post.jobId);
     if (oldJob) await oldJob.remove();
     post.jobId = null;
   }
 
-  // 🔁 Toggle logic
+  // Toggle logic
   if (post.status === "Scheduled") {
     post.status = "Draft";
   } else {
@@ -266,10 +267,39 @@ export const deletePost = asyncHandler(async (req, res) => {
   res.json({ message: "Deleted" });
 });
 
-/* GET */
+/* GET WITH FILTERING & PAGINATION */
 
 export const getPosts = asyncHandler(async (req, res) => {
-  const posts = await Post.find({ brandId: req.params.brandId });
+  const { brandId } = req.params;
+  const { status, platform, postType, search, page } = req.query;
+
+  const filter = { brandId };
+
+  if (status) {
+    filter.status = status;
+  }
+
+  if (platform) {
+    filter.platform = platform;
+  }
+
+  if (postType) {
+    filter.postType = postType;
+  }
+
+  if (search && search.trim()) {
+    filter.$or = [
+      { title: { $regex: search.trim(), $options: "i" } },
+      { caption: { $regex: search.trim(), $options: "i" } },
+    ];
+  }
+
+  if (page) {
+    const paginatedResult = await paginate(Post, filter, req.query);
+    return res.json(paginatedResult);
+  }
+
+  const posts = await Post.find(filter).sort({ scheduledAt: -1 });
   res.json(posts);
 });
 
