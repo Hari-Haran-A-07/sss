@@ -20,6 +20,11 @@ import Backlinks from "../pages/backlinks/Backlinks";
 import BacklinkDetails from "../pages/backlinks/BacklinkDetails";
 
 import Analytics from "../pages/analytics/Analytics";
+import CreativeStudio from "../pages/studio/CreativeStudio";
+import StaticPostGuide from "../pages/studio/StaticPostGuide";
+import CarouselPostGuide from "../pages/studio/CarouselPostGuide";
+import ReelVideoGuide from "../pages/studio/ReelVideoGuide";
+import ToolsHub from "../pages/tools/ToolsHub";
 
 /* WRAPPER FOR PROTECTED + LAYOUT */
 
@@ -63,6 +68,15 @@ const AppRoutes = () => {
         />
 
         <Route path="/brand/:brandId/analytics" element={<Analytics />} />
+
+        {/* STUDIO & CREATIVE GUIDES */}
+        <Route path="/studio" element={<CreativeStudio />} />
+        <Route path="/studio/static-post" element={<StaticPostGuide />} />
+        <Route path="/studio/carousel-post" element={<CarouselPostGuide />} />
+        <Route path="/studio/reel-video" element={<ReelVideoGuide />} />
+
+        {/* TOOLS HUB */}
+        <Route path="/tools" element={<ToolsHub />} />
       </Route>
 
       {/* FALLBACK */}
