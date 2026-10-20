@@ -65,7 +65,7 @@ const Register = () => {
       const message =
         error.response?.data?.message ||
         (error.response
-          ? "Registration failed. Please try again."
+          ? (error.response?.status === 404 ? "API route not found (404). Backend service is unreachable." : "Registration failed. Please try again.")
           : "Cannot connect to the server. Check that the backend is running.");
 
       toast.error(message);

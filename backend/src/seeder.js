@@ -79,8 +79,8 @@ const seedData = async () => {
         postType: "Video",
         platform: "YouTube",
         caption: "Watch the latest Tesla reveal",
-        mediaLink: "https://youtube.com",
-        scheduledDate: new Date(),
+        mediaUrls: ["https://youtube.com"],
+        scheduledAt: new Date(Date.now() + 86400000),
         status: "Scheduled",
       },
       {
@@ -89,8 +89,8 @@ const seedData = async () => {
         postType: "Static",
         platform: "Instagram",
         caption: "Train harder with Nike",
-        mediaLink: "https://instagram.com",
-        scheduledDate: new Date(),
+        mediaUrls: ["https://instagram.com"],
+        scheduledAt: new Date(Date.now() + 86400000),
         status: "Draft",
       },
     ]);

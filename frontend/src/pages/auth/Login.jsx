@@ -52,7 +52,7 @@ const Login = () => {
       const message =
         error.response?.data?.message ||
         (error.response
-          ? "Unable to log in. Please check your credentials."
+          ? (error.response?.status === 404 ? "API route not found (404). Backend service is unreachable." : "Unable to log in. Please check your credentials.")
           : "Cannot connect to the server. Check that the backend is running.");
 
       toast.error(message);

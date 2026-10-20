@@ -170,6 +170,10 @@ const worker = new Worker(
 // 🔥 WORKER EVENT LISTENERS
 // ===============================
 
+worker.on("error", (err) => {
+  console.warn("⚠️ Worker Connection Warning:", err.message);
+});
+
 worker.on("active", (job) => {
   console.log(`🚀 Job started: ${job.id}`);
 });
