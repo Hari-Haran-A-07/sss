@@ -14,6 +14,7 @@ import postRoutes from "./routes/postRoutes.js";
 import backlinkRoutes from "./routes/backlinkRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
+import healthRoutes from "./routes/healthRoutes.js";
 
 import { errorHandler } from "./middleware/errorMiddleware.js";
 
@@ -41,6 +42,7 @@ const startServer = async () => {
     app.use("/api/backlinks", backlinkRoutes);
     app.use("/api/analytics", analyticsRoutes);
     app.use("/api/dashboard", dashboardRoutes);
+    app.use("/api/health", healthRoutes);
 
     app.use(errorHandler);
 
