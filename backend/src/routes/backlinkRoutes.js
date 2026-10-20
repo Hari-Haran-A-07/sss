@@ -8,16 +8,21 @@ import {
 } from "../controllers/backlinkController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
+import { validate } from "../middleware/validateMiddleware.js";
+import {
+  validateCreateBacklink,
+  validateUpdateBacklink,
+} from "../validators/backlinkValidator.js";
 
 const router = express.Router();
 
-router.post("/", protect, createBacklink);
+router.post("/", protect, validate(validateCreateBacklink), createBacklink);
 
 router.get("/brand/:brandId", protect, getBacklinks);
 
 router.get("/:id", protect, getBacklink);
 
-router.put("/:id", protect, updateBacklink);
+router.put("/:id", protect, validate(validateUpdateBacklink), updateBacklink);
 
 router.delete("/:id", protect, deleteBacklink);
 
