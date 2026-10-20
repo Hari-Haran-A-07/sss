@@ -6,6 +6,7 @@ const postSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Brand",
       required: true,
+      index: true,
     },
 
     title: { type: String, required: true },
@@ -29,6 +30,7 @@ const postSchema = mongoose.Schema(
     scheduledAt: {
       type: Date,
       required: true,
+      index: true,
     },
 
     jobId: { type: String },
@@ -46,5 +48,11 @@ const postSchema = mongoose.Schema(
   },
   { timestamps: true },
 );
+
+// Compound indexes for frequent queries
+postSchema.index({ brandId: 1, scheduledAt: -1 });
+postSchema.index({ brandId: 1, status: 1 });
+postSchema.index({ brandId: 1, platform: 1 });
+postSchema.index({ title: "text", caption: "text" });
 
 export default mongoose.model("Post", postSchema);
