@@ -6,6 +6,19 @@ import { getBrandById } from "../../services/brandService";
 
 const isMongoId = (value) => /^[0-9a-fA-F]{24}$/.test(value);
 
+const ROUTE_LABELS = {
+  brands: "Brands",
+  studio: "Creative Studio",
+  "static-post": "Static Post Guide",
+  "carousel-post": "Carousel Guide",
+  "reel-video": "Reel Video Guide",
+  tools: "Tools Hub",
+  calendar: "Content Calendar",
+  posts: "Posts",
+  backlinks: "Backlinks",
+  analytics: "Analytics",
+};
+
 const BreadcrumbNav = () => {
   const location = useLocation();
   const { brandId } = useParams();
@@ -20,7 +33,6 @@ const BreadcrumbNav = () => {
 
       try {
         const brand = await getBrandById(brandId);
-
         setBrandName(brand.name);
       } catch {
         setBrandName("Brand");
@@ -32,7 +44,7 @@ const BreadcrumbNav = () => {
 
   return (
     <Breadcrumbs aria-label="breadcrumb">
-      <Link to="/" className="text-blue-600">
+      <Link to="/" className="text-blue-600 hover:underline">
         Home
       </Link>
 
@@ -42,30 +54,18 @@ const BreadcrumbNav = () => {
         let label = value;
         let path = `/${pathnames.slice(0, index + 1).join("/")}`;
 
-        /* Brands page */
-
-        if (value === "brands") {
-          label = "Brands";
-          path = "/brands";
-        }
-
-        /* Brand workspace */
-
-        if (value === brandId) {
+        if (ROUTE_LABELS[value]) {
+          label = ROUTE_LABELS[value];
+        } else if (value === brandId) {
           label = brandName || "Brand";
           path = `/brand/${brandId}`;
-        }
-
-        /* Hide raw MongoDB ids (postId/backlinkId) */
-
-        if (isMongoId(value) && value !== brandId) {
+        } else if (isMongoId(value) && value !== brandId) {
           label = "Details";
-        }
-
-        /* Capitalize normal routes */
-
-        if (!isMongoId(value) && value !== brandId && value !== "brands") {
-          label = value.charAt(0).toUpperCase() + value.slice(1);
+        } else {
+          label = value
+            .split("-")
+            .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+            .join(" ");
         }
 
         if (isLast) {
@@ -77,7 +77,7 @@ const BreadcrumbNav = () => {
         }
 
         return (
-          <Link key={path} to={path} className="text-blue-600">
+          <Link key={path} to={path} className="text-blue-600 hover:underline">
             {label}
           </Link>
         );
