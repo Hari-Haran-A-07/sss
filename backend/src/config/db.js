@@ -16,11 +16,17 @@ const connectDB = async () => {
     return cached.conn;
   }
 
-  const uri = process.env.MONGO_URI || process.env.MONGODB_URI || FALLBACK_MONGO_URI;
+  let uri = process.env.MONGO_URI || process.env.MONGODB_URI || FALLBACK_MONGO_URI;
+
+  // Automatically replace placeholder if user copied Atlas URI template
+  if (uri.includes("<db_password>") || uri.includes("<password>")) {
+    uri = uri.replace("<db_password>", "Jzc9k59FqpDmWBRu").replace("<password>", "Jzc9k59FqpDmWBRu");
+  }
 
   // If a connection attempt is already in flight, await it
   if (!cached.promise) {
     const opts = {
+      dbName: "socialmedia",
       bufferCommands: false,
       serverSelectionTimeoutMS: 10000,
       connectTimeoutMS: 10000,
