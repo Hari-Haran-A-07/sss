@@ -7,11 +7,13 @@ import {
 } from "../controllers/brandController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
+import { validate } from "../middleware/validateMiddleware.js";
+import { validateCreateBrand } from "../validators/brandValidator.js";
 
 const router = express.Router();
 
 /* CREATE BRAND */
-router.post("/", protect, createBrand);
+router.post("/", protect, validate(validateCreateBrand), createBrand);
 
 /* GET ALL BRANDS */
 router.get("/", protect, getBrands);
